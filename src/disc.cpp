@@ -27,6 +27,10 @@
 #include <musicbrainz3/disc.h>
 #include "utils_private.h"
 
+#ifndef DISCID_HAVE_SPARSE_READ
+#define discid_read_sparse(disc, dev, i) discid_read(disc, dev)
+#endif
+
 using namespace std;
 using namespace MusicBrainz;
 
@@ -86,7 +90,7 @@ MusicBrainz::readDisc(const std::string &deviceName)
 		throw DiscError("Couldn't create a new DiscId instance.");
 	}
 	
-	if (!discid_read(discid, deviceName.empty() ? NULL : deviceName.c_str())) {
+	if (!discid_read_sparse(discid, deviceName.empty() ? NULL : deviceName.c_str(), 0)) {
 		string msg(discid_get_error_msg(discid));
 		discid_free(discid);
 		throw DiscError(msg);
